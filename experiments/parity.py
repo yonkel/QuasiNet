@@ -90,7 +90,7 @@ def test_convergence(
         parity_degree: int = 2,
         repeats: int = 100,
         hidden: int = 3,
-        lr: float = 0.9,
+        lr: float = 0.5,
         batch_size: int = 1,
     ):
 
@@ -120,7 +120,7 @@ def test_convergence(
             train_set=train_set,
             zero_label=-1,
             max_epochs=1000,
-            batch_size=1
+            batch_size=batch_size
         )
 
         converged_sum += converged
@@ -144,7 +144,7 @@ def test_parity(parity_degree:int,
     ):
     output_list = []
     for h in hidden_layers:
-        output_list.append(test_convergence(parity_degree=parity_degree, repeats=100, hidden=h, lr=0.5))
+        output_list.append(test_convergence(parity_degree=parity_degree, repeats=100, hidden=h, lr=0.5, batch_size=1))
 
     return output_list
 
