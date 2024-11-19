@@ -15,6 +15,9 @@ class Quasi(nn.Module):
         self.weight = Parameter(torch.empty((out_features, in_features), **factory_kwargs))
         nn.init.trunc_normal_(self.weight, mean=0.0, std=1.0)
 
+    def __repr__(self):
+        return f"Quasi(in_features={self.in_features}, out_features={self.out_features}, bias=False)"
+
     def forward(self, input: Tensor) -> Tensor:
         while len(input.shape) < 3: # --> so the tensor shape is consistent (batch, out_features, in_features)
           input = input.unsqueeze(-2)
