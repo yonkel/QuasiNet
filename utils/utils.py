@@ -1,29 +1,25 @@
 import torch
 import itertools
-import numpy as np
-import torchvision
-import torchvision.transforms as transforms
+from torchvision import datasets, transforms
 from datasets import load_dataset
-
-
 from torch.utils.data import Dataset
-from torchvision.transforms import Lambda, InterpolationMode
+from torchvision.transforms import InterpolationMode
 
 
-def twospirals_raw(n_points, noise=0.5):
-    n = np.sqrt(np.random.rand(n_points, 1)) * 780 * (2 * np.pi) / 360
-    d1x = -np.cos(n) * n + np.random.rand(n_points, 1) * noise
-    d1y = np.sin(n) * n + np.random.rand(n_points, 1) * noise
-    return (np.vstack((np.hstack((d1x, d1y)), np.hstack((-d1x, -d1y)))),
-            np.hstack((np.zeros(n_points), np.ones(n_points))))
-
-def spirals(points, test_size=0.2):
-    x, y = twospirals_raw(points)
-    m = np.max(x)
-    x = x / m
-    y = np.where(y == 0, -1, y)
-    y = np.reshape(y, (len(y), 1))
-    return x, y
+# def twospirals_raw(n_points, noise=0.5):
+#     n = np.sqrt(np.random.rand(n_points, 1)) * 780 * (2 * np.pi) / 360
+#     d1x = -np.cos(n) * n + np.random.rand(n_points, 1) * noise
+#     d1y = np.sin(n) * n + np.random.rand(n_points, 1) * noise
+#     return (np.vstack((np.hstack((d1x, d1y)), np.hstack((-d1x, -d1y)))),
+#             np.hstack((np.zeros(n_points), np.ones(n_points))))
+#
+# def spirals(points, test_size=0.2):
+#     x, y = twospirals_raw(points)
+#     m = np.max(x)
+#     x = x / m
+#     y = np.where(y == 0, -1, y)
+#     y = np.reshape(y, (len(y), 1))
+#     return x, y
 
 
 class make_into_set(Dataset):
@@ -99,30 +95,33 @@ def get_dataset_from_HF(name: str, transform: transforms = None, target_transfor
     return train_set, test_set
 
 
-def get_bin_cifar_dataset(small=True):
+def get_bin_cifar_dataset(transform):
     classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
     classes_bin = (-1, -1, 1, 1, 1, 1, 1, 1, -1, -1)
 
-    transform = transforms.Compose([
-        transforms.Resize(256, interpolation=InterpolationMode.BILINEAR),
-        transforms.CenterCrop(224),
-        transforms.ToTensor(),
-        transforms.Lambda(lambda x: x.repeat(3, 1, 1) if x.size(0) == 1 else x),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    ])
-
     target_transform = transforms.Lambda(
-        lambda y: torch.tensor(np.array([-1])) if y in [0, 1, 8, 9] else torch.tensor(np.array([1]))
+        lambda y: torch.tensor(-1).to(torch.float) if y in [0, 1, 8, 9] else torch.tensor(1).to(torch.float)
     )
 
-    train_set, test_set = get_dataset_from_HF("uoft-cs/cifar10", transform=transform, target_transform=target_transform)
+    train_dataset = datasets.CIFAR10(root='./data', train=True, download=True, transform=transform, target_transform=target_transform)
+    test_dataset = datasets.CIFAR10(root='./data', train=False, download=True, transform=transform, target_transform=target_transform)
 
-    return train_set, test_set
+    # train_set, test_set = get_dataset_from_HF("uoft-cs/cifar10", transform=transform, target_transform=target_transform)
+
+    return train_dataset, test_dataset
 
 
 if __name__ == '__main__':
     # set = get_parity_dataset(3, remap=True)
-    train_set, test_set = get_bin_cifar_dataset(small=True)
+    transform = transforms.Compose([
+        transforms.Resize(32, interpolation=InterpolationMode.BILINEAR),
+        transforms.CenterCrop(32),
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+    ])
+
+
+    train_set, test_set = get_bin_cifar_dataset(transform)
 
     train_loader = torch.utils.data.DataLoader(train_set, batch_size=1, shuffle=True)
 
