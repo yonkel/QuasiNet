@@ -43,4 +43,4 @@ if __name__ == "__main__":
     print("Training time: ", end - start)
 
 
-    torch.save(model.state_dict(), 'model_weights/test_covn_cifar10.pth')
+    torch.save(model.state_dict(), 'model_weights/covn_cifar10.pth')
