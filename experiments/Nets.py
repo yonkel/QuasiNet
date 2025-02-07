@@ -1,5 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
+import torch
 
 
 ## THIS FILE IS FOR SAVING NET CLASSES FOR TORCH LOADING
@@ -24,3 +25,27 @@ class Net_test(nn.Module):
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
         return x
+
+
+class Plus(nn.Module):
+    def __init__(self):
+        super(Plus, self).__init__()
+
+    def forward(self, x):
+        return x + torch.ones(x.size()).type_as(x)
+
+class Minus(nn.Module):
+    def __init__(self):
+        super(Minus, self).__init__()
+
+    def forward(self, x):
+        return x - torch.ones(x.size()).type_as(x)
+
+class Test(nn.Module):
+    def __init__(self):
+        super(Test, self).__init__()
+
+        self.fc1 = Plus()
+
+    def forward(self, x):
+        return self.fc1(x)

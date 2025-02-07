@@ -51,7 +51,7 @@ def get_parity_dataset(degree : int, remap=False):
         pt_labels = torch.where(pt_labels == 0, -1, 1)
 
     pt_X = pt_X.to(torch.float)
-    pt_labels = pt_labels.to(torch.float)
+    pt_labels = pt_labels.unsqueeze(1).to(torch.float)
 
     return make_into_set(pt_X, pt_labels)
 

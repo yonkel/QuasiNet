@@ -1,5 +1,9 @@
+import math
+import time
+
 import torch
 import numpy as np
+from datetime import timedelta
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -41,7 +45,7 @@ def train_one_net(
             labels = labels.to(device)
 
             optimizer.zero_grad()
-            outputs = model(inputs).squeeze()  # TODO throws warning with batchsize 1, outputs = Size([]), labels =Size([1])
+            outputs = model(inputs)
 
             loss = criterion(outputs, labels)
             loss.backward()
@@ -91,6 +95,9 @@ def test_one_setup(
 ):
     converged_list = []
     end_epoch_list = []
+    train_loss_list_all = []
+
+    start = time.time()
     for repeat in range(repeats):
         model = net_class()
         optimizer = torch.optim.SGD(model.parameters(), lr=lr)
@@ -109,13 +116,20 @@ def test_one_setup(
         if verbose:
             print(repeat, converged)
 
+        train_loss_list_all.append(train_loss_list[-1])
         converged_list.append(converged)
         end_epoch_list.append(epoch)
+    end = time.time()
+    delta = end - start
+    formatted_time = str(timedelta(seconds=delta))
 
+
+    print(f"Train loss: min --> {min(train_loss_list_all)}, max --> {max(train_loss_list_all)}, mean --> {np.mean(train_loss_list_all)}")
     converged_epochs = [end_epoch_list[i] for i in range(len(end_epoch_list)) if converged_list[i] == True]
     if converged_epochs == []:
         converged_epochs = [max_epochs]
-    print(f"Converged {sum(converged_list)}/{repeats}, avg epoch {np.mean(converged_epochs)}, std epoch = {np.std(converged_epochs)}")
+
+    print(f"Converged {sum(converged_list)}/{repeats}, avg epoch {np.mean(converged_epochs)}, std epoch = {np.std(converged_epochs)}, it took: {formatted_time}")
 
 
     return {
