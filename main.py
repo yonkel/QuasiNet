@@ -3,14 +3,14 @@ import pandas as pd
 from experiments.parity import test_parity
 
 if __name__ == '__main__':
-    p = 8
-    h_list = [13,14,15,16,17]
-    batch = 4
+    p = 2
+    h_list = [2, 3, 4]
+    batch = 1
 
     # TODO add hyperparameters to test_parity so the customization can be done on this level
     results = test_parity(parity_degree=p,
                           hidden_layers=h_list,
-                          repeats=0,
+                          repeats=10,
                           learning_rate=0.5,
                           batch_size=batch,
                           zero_label=-1,
