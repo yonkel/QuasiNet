@@ -3,6 +3,7 @@ from modules.quasi_function import Quasi_m
 import torch
 import torch.nn as nn
 
+
 def test1():
     x = torch.tensor([
         [0.5836, 0.5555, 0.0326, 0.3965, 0.9331, 0.2323, 0.7176, 0.3473, 0.4592, 0.4075],
@@ -54,8 +55,8 @@ def test1():
 
 
 def test2():
-    x = torch.rand((2,10))
-    w = torch.rand((5,10))
+    x = torch.rand((2, 10))
+    w = torch.rand((5, 10))
 
     q1 = Quasi(10, 5)
     q1.weight = nn.Parameter(torch.clone(w))
@@ -66,7 +67,7 @@ def test2():
     d1 = q1(x)
     d2 = q2(x)
 
-    y = torch.ones((2,5))
+    y = torch.ones((2, 5))
     loss = torch.nn.MSELoss()
 
     e1 = loss(y, d1)
@@ -80,13 +81,15 @@ def test2():
 
     return q1.weight.grad == q2.weight.grad
 
+
 def test3():
     outs = []
     for i in range(1000):
         outs.append(test2())
 
     outs = torch.stack(outs)
-    print( 1000 - torch.sum(outs, axis=0))
+    print(1000 - torch.sum(outs, axis=0))
+
 
 if __name__ == '__main__':
     test3()

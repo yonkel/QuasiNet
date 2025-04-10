@@ -37,12 +37,11 @@ def train_one_net(
         running_loss = 0.0
         running_acc = 0
         for inputs, labels in train_loader:
-
             inputs = inputs.to(device)
             labels = labels.to(device)
 
             optimizer.zero_grad()
-            outputs = model(inputs).squeeze() # TODO throws warning with batchsize 1, outputs = Size([]), labels =Size([1])
+            outputs = model(inputs).squeeze()  # TODO throws warning with batchsize 1, outputs = Size([]), labels =Size([1])
 
             loss = criterion(outputs, labels)
             loss.backward()
@@ -52,7 +51,6 @@ def train_one_net(
 
             rounded_labels = torch.where(outputs > threshold, 1, zero_label)
             running_acc += torch.sum(rounded_labels == labels)
-
 
         train_loss_list.append(running_loss / len(train_set))
         train_acc_list.append(running_acc / len(train_set))
@@ -64,7 +62,6 @@ def train_one_net(
         if train_acc_list[-1] == 1:
             return True, epoch, train_loss_list, train_acc_list
 
-
         if eval_set is not None and epoch % 10 == 0:
             model.eval()
 
@@ -74,11 +71,10 @@ def train_one_net(
                 loss = criterion(outputs, labels)
                 eval_loss += loss.item()
 
-            print(eval_loss/ len(eval_set))
+            print(eval_loss / len(eval_set))
             model.train()
 
     return False, max_epochs, train_loss_list, train_acc_list
-
 
 
 def test_one_setup(
@@ -92,9 +88,7 @@ def test_one_setup(
         zero_label: int,
         criterion: torch.nn.modules.loss,
         verbose: bool = False,
-    ):
-
-
+):
     converged_list = []
     end_epoch_list = []
     for repeat in range(repeats):
@@ -118,7 +112,6 @@ def test_one_setup(
         converged_list.append(converged)
         end_epoch_list.append(epoch)
 
-
     converged_epochs = [end_epoch_list[i] for i in range(len(end_epoch_list)) if converged_list[i] == True]
     if converged_epochs == []:
         converged_epochs = [max_epochs]
@@ -127,7 +120,7 @@ def test_one_setup(
 
     return {
         "hidden": hidden,
-        "converged" : sum(converged_list),
+        "converged": sum(converged_list),
         "lr": lr,
         "batch_size": batch_size,
         "epochs": end_epoch_list,
@@ -135,4 +128,4 @@ def test_one_setup(
 
 
 if __name__ == '__main__':
-   ...
+    ...
