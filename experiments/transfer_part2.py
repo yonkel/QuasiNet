@@ -1,24 +1,19 @@
 import time
-import torch
-import torch.nn as nn
-import torch.optim as optim
 
+import torch.optim as optim
 from torchvision import transforms
 from torchvision.transforms import InterpolationMode
-from modules.quasi import Quasi
+
+from utils.Nets import *
+from utils.data import get_bin_cifar_dataset
 from utils.transfer_learning_trainer import train, binary_accuracy_function
-from utils.utils import get_bin_cifar_dataset
-from Nets import *
-
-
-
 
 if __name__ == "__main__":
 
     # Fine-tuning
     # 2nd training - Train full net on BinaryCifar with QuasiNet in FC parts
 
-    model = Net_test()
+    model = TestNet()
 
     state_dict = torch.load("model_weights/covn_cifar10.pth")
     model.load_state_dict(state_dict)
