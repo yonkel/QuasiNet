@@ -1,11 +1,11 @@
 import time
-import torch
-import torch.optim as optim
 
+import torch.optim as optim
 from torchvision import datasets, transforms
 from torchvision.transforms import InterpolationMode
+
+from utils.Nets import *
 from utils.transfer_learning_trainer import train, accuracy_function
-from Nets import *
 
 transform = transforms.Compose([
     transforms.Resize(32, interpolation=InterpolationMode.BILINEAR),
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     train_loader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
     test_loader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
 
-    model = Net_test()
+    model = TestNet()
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=learning_rate)
 

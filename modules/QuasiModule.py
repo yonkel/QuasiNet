@@ -5,7 +5,7 @@ from torch import Tensor
 from torch.nn.parameter import Parameter
 
 
-class Quasi_f(torch.autograd.Function):
+class QuasiFunction(torch.autograd.Function):
     @staticmethod
     def forward(ctx, input, parameters):
         while len(input.shape) < 3: # --> so the tensor shape is consistent (batch, out_features, in_features)
@@ -34,7 +34,7 @@ class Quasi_f(torch.autograd.Function):
         return grad_input, grad_params
 
 # Module wrapper for function
-class Quasi_m(nn.Module):
+class QuasiModule(nn.Module):
 
     def __init__(self, in_features: int, out_features: int, device=None, dtype=None) -> None:
         factory_kwargs = {'device': device, 'dtype': dtype}
@@ -43,4 +43,4 @@ class Quasi_m(nn.Module):
         nn.init.trunc_normal_(self.weight, mean=0.0, std=1.0)
 
     def forward(self, input: Tensor) -> Tensor:
-        return Quasi_f.apply(input, self.weight)
+        return QuasiFunction.apply(input, self.weight)

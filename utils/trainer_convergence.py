@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from torch.utils.data import Dataset, DataLoader
-from modules.quasi import Quasi
+from modules.Quasi import Quasi
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # 'mps' for macos
 

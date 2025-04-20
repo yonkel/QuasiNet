@@ -1,5 +1,5 @@
-from modules.quasi import Quasi
-from modules.quasi_function import Quasi_m
+from modules.Quasi import Quasi
+from modules.QuasiModule import QuasiModule
 import torch
 import torch.nn as nn
 
@@ -24,7 +24,7 @@ def test1():
     ], requires_grad=True)
 
     q1 = Quasi(10, 5)
-    q2 = Quasi_m(10, 5)
+    q2 = QuasiModule(10, 5)
 
     q1.weight = nn.Parameter(torch.clone(w))
     q2.weight = nn.Parameter(torch.clone(w))
@@ -61,7 +61,7 @@ def test2():
     q1 = Quasi(10, 5)
     q1.weight = nn.Parameter(torch.clone(w))
 
-    q2 = Quasi_m(10, 5)
+    q2 = QuasiModule(10, 5)
     q2.weight = nn.Parameter(torch.clone(w))
 
     d1 = q1(x)
@@ -79,7 +79,8 @@ def test2():
     # print(q1.weight.grad == q2.weight.grad)
     # print((q1.weight.grad == q2.weight.grad).shape)
 
-    return q1.weight.grad == q2.weight.grad
+    print(q1.weight.grad == q2.weight.grad)
+    print(torch.abs(q1.weight.grad - q2.weight.grad))
 
 
 def test3():
@@ -92,4 +93,4 @@ def test3():
 
 
 if __name__ == '__main__':
-    test3()
+    test2()

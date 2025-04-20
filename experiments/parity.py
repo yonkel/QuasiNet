@@ -1,29 +1,28 @@
 import torch
-import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F
 
-from torch.utils.data import Dataset, DataLoader
-from utils.utils import get_parity_dataset
-from modules.quasi import Quasi
-from utils.trainer import test_one_setup
+from modules.Quasi import Quasi
+from utils.data import get_parity_dataset
+from utils.trainer_convergence import test_one_setup
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # 'mps' for macos
 
-def test_parity(parity_degree:int,
-                hidden_layers:list,
-                repeats:int = 100,
-                learning_rate:float = 0.5,
+
+def test_parity(parity_degree: int,
+                hidden_layers: list,
+                repeats: int = 100,
+                learning_rate: float = 0.5,
                 batch_size: int = 1,
                 zero_label: int = 0,
                 max_epochs: int = 1000,
                 criterion: torch.nn.modules.loss = torch.nn.MSELoss(),
                 verbose: bool = False,
-    ):
+                ):
 
-    class Parity_net(torch.nn.Module):
+    class ParityNet(torch.nn.Module):
         def __init__(self):
-            super(Parity_net, self).__init__()
+            super(ParityNet, self).__init__()
             self.fc1 = nn.Linear(parity_degree, h)
             self.q1 = Quasi(h, 1)
 
@@ -35,8 +34,7 @@ def test_parity(parity_degree:int,
     train_set = get_parity_dataset(parity_degree, remap=True)
     output_list = []
     for h in hidden_layers:
-
-        output_list.append(test_one_setup(net_class=Parity_net,
+        output_list.append(test_one_setup(net_class=ParityNet,
                                           train_set=train_set,
                                           hidden=h,
                                           lr=learning_rate,
@@ -46,21 +44,18 @@ def test_parity(parity_degree:int,
                                           zero_label=zero_label,
                                           criterion=criterion,
                                           verbose=verbose,
-                                        )
+                                          )
                            )
-
     return output_list
 
 
-
 if __name__ == '__main__':
-
     results = test_parity(parity_degree=3,
                           hidden_layers=[2, 3, 4, 5],
                           repeats=10,
                           learning_rate=0.5,
-                          batch_size = 1,
-                          zero_label = -1,
-                          max_epochs = 1000,
-                          verbose = False
-    )
+                          batch_size=1,
+                          zero_label=-1,
+                          max_epochs=1000,
+                          verbose=False
+                          )

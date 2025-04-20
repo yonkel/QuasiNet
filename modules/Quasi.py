@@ -19,13 +19,15 @@ class Quasi(nn.Module):
         return f"Quasi(in_features={self.in_features}, out_features={self.out_features}, bias=False)"
 
     def forward(self, input: Tensor) -> Tensor:
-        while len(input.shape) < 3: # --> so the tensor shape is consistent (batch, out_features, in_features)
-          input = input.unsqueeze(-2)
+        if input.dim() == 1: # --> add batch dimension if it's so the tensor shape is consistent (batch, out_features, in_features)
+            input = input.unsqueeze(0)
 
-        h = 1 - torch.sigmoid(self.weight) * ( 1 - input )
-        h_prod = torch.prod(h, axis=2, keepdim=True) # axis=1 if tensor has only 2 dim
+        x = input.unsqueeze(1)
 
-        return h_prod.squeeze(-1)
+        h = 1 - torch.sigmoid(self.weight) * (1 - x)
+        result = torch.prod(h, dim=2)
+
+        return result
 
 
 if __name__ == '__main__':
@@ -46,4 +48,5 @@ if __name__ == '__main__':
         requires_grad=True)
     d = q(x)
 
-    print(d)
+    # tensor([[0.0141, 0.0132, 0.0174, 0.0093, 0.0109],
+    #         [0.0220, 0.0233, 0.0263, 0.0220, 0.0159]])
